@@ -8,20 +8,6 @@ jobs:
   tests:
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: testing
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -ppassword"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
       - uses: actions/checkout@v4
 
@@ -29,19 +15,11 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: mbstring, pdo_mysql
+          extensions: mbstring, pdo_sqlite
           coverage: none
 
       - name: Copy .env
-        run: |
-          cp .env.example .env
-          php -r "file_put_contents('.env', PHP_EOL, FILE_APPEND);"
-          php -r "file_put_contents('.env', 'DB_CONNECTION=mysql'.PHP_EOL, FILE_APPEND);"
-          php -r "file_put_contents('.env', 'DB_HOST=127.0.0.1'.PHP_EOL, FILE_APPEND);"
-          php -r "file_put_contents('.env', 'DB_PORT=3306'.PHP_EOL, FILE_APPEND);"
-          php -r "file_put_contents('.env', 'DB_DATABASE=testing'.PHP_EOL, FILE_APPEND);"
-          php -r "file_put_contents('.env', 'DB_USERNAME=root'.PHP_EOL, FILE_APPEND);"
-          php -r "file_put_contents('.env', 'DB_PASSWORD=password'.PHP_EOL, FILE_APPEND);"
+        run: cp .env.example .env
 
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
@@ -49,18 +27,10 @@ jobs:
       - name: Generate key
         run: php artisan key:generate
 
-      - name: Install mysql client
-        run: sudo apt-get update && sudo apt-get install -y mysql-client
-
-      - name: Wait for MySQL
+      - name: Prepare SQLite database
         run: |
-          for i in {1..30}; do
-            mysqladmin ping -h 127.0.0.1 -u root -ppassword && break
-            sleep 2
-          done
-
-      - name: Ensure testing database exists
-        run: mysql -h 127.0.0.1 -u root -ppassword -e "CREATE DATABASE IF NOT EXISTS testing;"
+          mkdir -p database
+          touch database/database.sqlite
 
       - name: Clear config cache
         run: php artisan config:clear
