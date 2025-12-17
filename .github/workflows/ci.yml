@@ -13,7 +13,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: servicedesk_ci
+          MYSQL_DATABASE: testing
         ports:
           - 3306:3306
         options: >-
@@ -39,7 +39,7 @@ jobs:
           php -r "file_put_contents('.env', 'DB_CONNECTION=mysql'.PHP_EOL, FILE_APPEND);"
           php -r "file_put_contents('.env', 'DB_HOST=127.0.0.1'.PHP_EOL, FILE_APPEND);"
           php -r "file_put_contents('.env', 'DB_PORT=3306'.PHP_EOL, FILE_APPEND);"
-          php -r "file_put_contents('.env', 'DB_DATABASE=servicedesk_ci'.PHP_EOL, FILE_APPEND);"
+          php -r "file_put_contents('.env', 'DB_DATABASE=testing'.PHP_EOL, FILE_APPEND);"
           php -r "file_put_contents('.env', 'DB_USERNAME=root'.PHP_EOL, FILE_APPEND);"
           php -r "file_put_contents('.env', 'DB_PASSWORD=password'.PHP_EOL, FILE_APPEND);"
 
