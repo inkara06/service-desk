@@ -2,7 +2,7 @@
     <div class="max-w-5xl mx-auto p-6">
         <div class="flex items-center justify-between mb-6">
             <h1 class="text-2xl font-semibold">Мои заявки</h1>
-            <a href="{{ route('tickets.create') }}" class="px-4 py-2 rounded bg-black text-white">
+            <a href="{{ route('tickets.create') }}" class="px-3 py-2 rounded bg-black text-black">
                 Создать заявку
             </a>
         </div>

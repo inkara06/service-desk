@@ -1,0 +1,14 @@
+:root {
+    --qg-bg: #fafcff;
+    --qg-text: #3f4a5d;
+    --qg-blue: #283A89;
+    --qg-blue-2: #345DAB;
+    --qg-cyan: #00ffff;
+    --qg-card: #ffffff;
+    --qg-border: #e2e2e2;
+  }
+  
+  body {
+    background: var(--qg-bg);
+    color: var(--qg-text);
+  }

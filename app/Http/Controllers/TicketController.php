@@ -17,12 +17,17 @@ class TicketController extends Controller
     }
 
     public function create()
-    {
+    {if (auth()->user()->role === 'admin') {
+        return redirect()->route('admin.tickets.index');}
         return view('tickets.create');
     }
 
+
     public function store(Request $request)
     {
+        if (auth()->user()->role === 'admin') {
+            return redirect()->route('admin.tickets.index');
+        }
         $data = $request->validate([
             'title' => ['required','string','max:255'],
             'category' => ['required','string','max:100'],

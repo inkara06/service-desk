@@ -11,9 +11,17 @@ export default {
 
     theme: {
         extend: {
+            
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                qg: {
+                  navy: '#000D44',
+                  aqua: '#20F1F5',
+                  ice:  '#F2F7FB',
+                }
+              }
         },
     },
 

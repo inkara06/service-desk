@@ -39,7 +39,7 @@
                 @error('due_date') <div class="text-red-600 text-sm">{{ $message }}</div> @enderror
             </div>
 
-            <button class="px-4 py-2 rounded bg-black text-white">Создать</button>
+            <button class="px-4 py-2 rounded bg-black text-black">Создать</button>
         </form>
     </div>
 </x-app-layout>

@@ -1,4 +1,25 @@
 <x-app-layout>
+    <form method="GET" action="{{ route('admin.tickets.index') }}" class="mb-4 flex gap-2 ">
+    <input
+        type="text"
+        name="search"
+        value="{{ request('search') }}"
+        placeholder="Поиск: ID, тема, описание, автор, исполнитель..."
+        class="!w-96 flex-none border border-slate-200 rounded-lg px-3 py-2"
+    >
+    <button
+        class="px-4 py-2 rounded-lg text-white"
+        style="background: linear-gradient(90.82deg,#2A9EB1 0%,#283A89 100%);"
+    >
+        Search
+    </button>
+
+    @if(request('search'))
+        <a href="{{ route('admin.tickets.index') }}" class="px-4 py-2 rounded-lg border border-slate-200">
+            Сброс
+        </a>
+    @endif
+</form>
     <div class="max-w-6xl mx-auto p-6">
         <h1 class="text-2xl font-semibold mb-6">Админка: все заявки</h1>
 
