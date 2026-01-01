@@ -7,14 +7,25 @@ use Illuminate\Http\Request;
 
 class TicketController extends Controller
 {
-    public function index()
-    {
-        $tickets = Ticket::where('author_id', auth()->id())
-            ->latest()
-            ->paginate(10);
+    public function index(Request $request)
+{
+    $userId = auth()->id();
 
-        return view('tickets.index', compact('tickets'));
-    }
+    $allowedStatuses = ['new', 'in_progress', 'done', 'rejected'];
+
+    $status = $request->query('status');
+
+    $tickets = Ticket::query()
+        ->where('author_id', $userId)
+        ->when($status && in_array($status, $allowedStatuses, true), function ($q) use ($status) {
+            $q->where('status', $status);
+        })
+        ->latest()
+        ->paginate(10)
+        ->withQueryString(); 
+
+    return view('tickets.index', compact('tickets'));
+}
 
     public function create()
     {if (auth()->user()->role === 'admin') {

@@ -18,15 +18,30 @@ Route::get('/dashboard', function () {
             'in_progress' => Ticket::where('status', 'in_progress')->count(),
             'done' => Ticket::where('status', 'done')->count(),
         ];
-    } else {
-        $stats = [
-            'total' => Ticket::where('author_id', $user->id)->count(),
-            'in_progress' => Ticket::where('author_id', $user->id)->where('status', 'in_progress')->count(),
-            'done' => Ticket::where('author_id', $user->id)->where('status', 'done')->count(),
-        ];
+
+        return view('dashboard', compact('stats'));
     }
 
-    return view('dashboard', compact('stats'));
+    // user
+    $stats = [
+        'total' => Ticket::where('author_id', $user->id)->count(),
+        'in_progress' => Ticket::where('author_id', $user->id)->where('status', 'in_progress')->count(),
+        'done' => Ticket::where('author_id', $user->id)->where('status', 'done')->count(),
+    ];
+
+    $inProgressPreview = Ticket::where('author_id', $user->id)
+        ->where('status', 'in_progress')
+        ->latest()
+        ->take(3)
+        ->get(['id','title','created_at']);
+
+    $donePreview = Ticket::where('author_id', $user->id)
+        ->where('status', 'done')
+        ->latest()
+        ->take(3)
+        ->get(['id','title','created_at']);
+
+    return view('dashboard', compact('stats','inProgressPreview','donePreview'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
