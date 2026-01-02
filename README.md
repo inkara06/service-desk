@@ -1,59 +1,146 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# QazaqGaz Service Desk (Laravel)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Веб-приложение Service Desk для создания и обработки заявок (tickets) с ролями **User** и **Admin**.  
+Пользователь создаёт заявки и видит их статус, администратор управляет заявками (статус, исполнитель, срок) и использует поиск/фильтры.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Стек
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **PHP** (Laravel)
+- **Blade** + **Tailwind CSS**
+- **Vite** (сборка фронтенд-ассетов, создаёт `public/build/manifest.json`)
+- База данных: **SQLite** (для тестов/CI) или **MySQL** (локально/прод)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Возможности
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### User
+- Создание заявки
+- Просмотр списка своих заявок
+- Фильтрация списка по статусу (`?status=in_progress`, `?status=done`)
+- Дашборд со статистикой и превью заявок “В обработке”
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Admin
+- Просмотр всех заявок
+- Быстрый поиск по заявкам (поле `q`)
+- Расширенный поиск (выпадающий блок) с фильтрами:
+  - статус
+  - приоритет
+  - исполнитель
+  - даты (from/to по `created_at`)
+- Изменение:
+  - статуса
+  - исполнителя
+  - срока (due_date)
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Роли и доступ
 
-### Premium Partners
+- Роль хранится в `users.role` (например: `user`, `admin`)
+- Админ-роуты доступны по префиксу `/admin` и защищены middleware `admin`
+  - `GET /admin/tickets` — список заявок
+  - `PATCH /admin/tickets/{ticket}/status` — обновление статуса/исполнителя/срока
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## Установка и запуск (локально)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 1) Клонировать и установить зависимости PHP
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
 
-## Code of Conduct
+2) Установить зависимости Node и собрать ассеты (Vite)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Важно: в проекте используется @vite(...), поэтому для корректного рендера страниц нужен public/build/manifest.json.
 
-## Security Vulnerabilities
+npm install
+npm run dev
+# или для прод-сборки:
+npm run build
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3) Настроить базу данных
 
-## License
+Вариант A: MySQL (локально)
+В .env:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=service_desk
+DB_USERNAME=root
+DB_PASSWORD=
+
+Затем:
+
+php artisan migrate
+
+Вариант B: SQLite 
+В .env:
+
+DB_CONNECTION=sqlite
+
+Создать файл базы:
+
+touch database/database.sqlite
+php artisan migrate
+
+4) Запуск сервера
+
+php artisan serve
+
+Открыть: http://127.0.0.1:8000
+
+⸻
+
+Тесты
+
+php artisan test
+
+Если тесты падают с ошибкой вида:
+ViteManifestNotFoundException: public/build/manifest.json
+
+Сделайте сборку ассетов:
+
+npm install
+npm run build
+
+
+⸻
+
+CI (GitHub Actions)
+
+В CI используется:
+	•	установка PHP зависимостей (composer install)
+	•	настройка SQLite
+	•	миграции
+	•	установка Node зависимостей
+	•	npm run build (чтобы появился public/build/manifest.json)
+	•	запуск тестов php artisan test
+
+⸻
+
+Основные маршруты
+
+User
+	•	GET /dashboard — дашборд
+	•	GET /tickets — мои заявки
+	•	GET /tickets/create — форма создания
+	•	POST /tickets — создание заявки
+
+Admin
+	•	GET /admin/tickets — админка (поиск/фильтры/управление)
+	•	PATCH /admin/tickets/{ticket}/status — обновления заявки
+
+⸻
+
+Примечания по интерфейсу
+	•	UI сделан в стиле QazaqGaz (градиентные акценты, светлая тема)
+	•	Для фильтров и пагинации используются query-параметры, например:
+	•	/tickets?status=in_progress
+	•	/admin/tickets?q=printer&status=in_progress&from=2026-01-01&to=2026-01-31
+
